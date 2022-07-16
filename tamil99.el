@@ -27,39 +27,9 @@
 ;;; Code:
 (require 'quail)
 
-(defvar tamil99-vowel-signs
-  '(("அ" . nil) ("ஆ" . ?ா) ("இ" . ?ி) ("ஈ" . ?ீ)
-    ("உ" . ?ு) ("ஊ" . ?ூ) ("எ" . ?ெ) ("ஏ" . ?ே)
-    ("ஐ" . ?ை) ("ஒ" . ?ொ) ("ஓ" . ?ோ) ("ஔ" . ?ௌ)))
-
-(defvar-local tamil99--delink-flag nil)
-(put 'tamil99--delink-flag 'permanent-local t)
-
-(defsubst tamil99-vowel-keyp (key)
-  (member key '("q" "w" "e" "r" "t" "a" "s" "d" "g" "g" "G" "z" "x" "c")))
-
-(defsubst tamil99-consonant-keyp (key)
-  (member key '("y" "u" "i" "o" "p" "[" "]" "U" "I" "Q" "W" "E" "R" "T" "h"
-                "j" "k" "l" ";" "'" "H" "J" "v" "b" "n" "m" "/" "N")))
-
-(defsubst tamil99-consonantp ()
-  ;; Consonants in Tamil unicode block is between KA and HA.
-  (<= ?க (char-before (point)) ?ஹ))
-
-(defsubst tamil99-vowel-sign (key)
-  (string (assoc-default (assoc-default key tamil99-translation-rules)
-                         tamil99-vowel-signs)))
-
-(defvar tamil99-hard-soft-pairs
-  '(("க" . ?ங) ("ச" . ?ஞ) ("த" . ?ந) ("ட" . ?ண) ("ப" . ?ம) ("ற" . ?ன)))
-
-(defsubst tamil99-soft-hard-pairp (key)
-  (eq (assoc-default key tamil99-hard-soft-pairs)
-      (char-before (point))))
-
 (defvar tamil99-translation-rules
   '(("q" . "ஆ") ("w" . "ஈ") ("e" . "ஊ") ("r" . "ஐ") ("t" . "ஏ") ("y" . "ள") ("u" . "ற") ("i" . "ன") ("o" . "ட") ("p" . "ண") ("[" . "ச") ("]" . "ஞ")
-    ("Q" . "ஸ") ("W" . "ஷ") ("E" . "ஜ") ("R" . "ஹ") ("T" ["க்ஷ"]) ("Y" . "ஸ்ரீ") ("U" . "ஶ") ("I" . "ன") ("O" . "[") ("P" . "]")
+    ("Q" . "ஸ") ("W" . "ஷ") ("E" . "ஜ") ("R" . "ஹ") ("T" . ["க்ஷ"]) ("Y" . "ஸ்ரீ") ("U" . "ஶ") ("I" . "ன") ("O" . "[") ("P" . "]")
     ("a" . "அ") ("s" . "இ") ("d" . "உ") ("f" . "்") ("g" . "எ") ("h" . "க") ("j" . "ப") ("k" . "ம") ("l" . "த") (";" . "ந") ("'" . "ய")
     ("A" . "௹") ("S" . "௺") ("D" . "௸") ("F" . "ஃ") ("G" . "எ") ("H" . "க") ("J" . "ப") ("K" . "\"") ("L" . ":") (":" . ";") ("\"" . "'")
     ("z" . "ஔ") ("x" . "ஓ") ("c" . "ஒ") ("v" . "வ") ("b" . "ங") ("n" . "ல") ("m" . "ர") ("/" . "ழ")
@@ -78,6 +48,41 @@
     ("^#10#" . "௰") ("^#100#" . "௱") ("^#1000#" . "௲")
     ;; TODO: Fractions.
     ))
+
+(defun tamil99--lookup-translation (key)
+  (let ((trans (assoc-default key tamil99-translation-rules)))
+    (if (vectorp trans)
+        (aref 0 trans)
+      trans)))
+
+(defvar tamil99-vowel-signs
+  '(("அ" . nil) ("ஆ" . ?ா) ("இ" . ?ி) ("ஈ" . ?ீ)
+    ("உ" . ?ு) ("ஊ" . ?ூ) ("எ" . ?ெ) ("ஏ" . ?ே)
+    ("ஐ" . ?ை) ("ஒ" . ?ொ) ("ஓ" . ?ோ) ("ஔ" . ?ௌ)))
+
+(defsubst tamil99-vowel-keyp (key)
+  (member key '("q" "w" "e" "r" "t" "a" "s" "d" "g" "g" "G" "z" "x" "c")))
+
+(defsubst tamil99-consonant-keyp (key)
+  (member key '("y" "u" "i" "o" "p" "[" "]" "U" "I" "Q" "W" "E" "R" "T" "h"
+                "j" "k" "l" ";" "'" "H" "J" "v" "b" "n" "m" "/" "N")))
+
+(defsubst tamil99-consonantp ()
+  ;; Consonants in Tamil unicode block is between KA and HA.
+  (<= ?க (char-before (point)) ?ஹ))
+
+(defsubst tamil99-vowel-sign (key)
+  (string (assoc-default (tamil99--lookup-translation key) tamil99-vowel-signs)))
+
+(defvar tamil99-hard-soft-pairs
+  '(("க" . ?ங) ("ச" . ?ஞ) ("த" . ?ந) ("ட" . ?ண) ("ப" . ?ம) ("ற" . ?ன)))
+
+(defsubst tamil99-soft-hard-pairp (key)
+  (eq (assoc-default key tamil99-hard-soft-pairs)
+      (char-before (point))))
+
+(defvar-local tamil99--delink-flag nil)
+(put 'tamil99--delink-flag 'permanent-local t)
 
 ;; The control flag may be a number, nil or t.
 ;; If a number, then that length of quail-current-key is to be
@@ -119,7 +124,7 @@
                     ;; TODO: This naive check will definitely fail
                     ;; when there's a க்ஷ before and we are inserting ஷ.
                     (equal (string (char-before (point)))
-                           (assoc-default key tamil99-translation-rules)))
+                           (tamil99--lookup-translation key)))
             (setq quail-current-str (concat "்" (if (characterp quail-current-str)
                                                    (string quail-current-str)
                                                  quail-current-str))
