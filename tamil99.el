@@ -95,7 +95,8 @@
 ;; is the final translation.
 (defun tamil99-update-translation (flag)
   ;; TODO: Do we need to handle f specially as well?
-  (when (eq flag t)
+  (cond
+   ((eq flag t)
     (let ((key quail-current-key))
       (cond
        ((and (equal key "W")
@@ -104,18 +105,17 @@
         ;; TODO: Maybe backspace & DEL needs to delete this ZWNJ?
         (setq quail-current-str (string #x200c quail-current-str) ; 200c = ZWNJ
               tamil99--delink-flag nil))
-       ((tamil99-vowel-keyp key)
-        (when (tamil99-consonantp)
-          ;; Check if delink flag needs to be set.
-          ;; TODO: Ask Srinivasan if it is possible to insert அ after a consonant.
-          (if (equal key "a")
-              (setq tamil99--delink-flag t
-                    quail-current-str "")
-            (if (null tamil99--delink-flag)
-                ;; If no delink flag is set, then insert the vowel sign.
-                (setq quail-current-str (tamil99-vowel-sign key))
-              ;; Reset the flag.
-              (setq tamil99--delink-flag nil)))))
+       ((and (tamil99-vowel-keyp key) (tamil99-consonantp))
+        ;; Check if delink flag needs to be set.
+        ;; TODO: Ask Srinivasan if it is possible to insert அ after a consonant.
+        (if (equal key "a")
+            (setq tamil99--delink-flag t
+                  quail-current-str "")
+          (if (null tamil99--delink-flag)
+              ;; If no delink flag is set, then insert the vowel sign.
+              (setq quail-current-str (tamil99-vowel-sign key))
+            ;; Reset the flag.
+            (setq tamil99--delink-flag nil))))
        ((tamil99-consonant-keyp key)
         ;; If delink flag is set, then don't do any fancy pants stuff.
         (if tamil99--delink-flag
@@ -125,15 +125,42 @@
           ;; add a pulli.
           (when (or (tamil99-soft-hard-pairp key)
                     ;; TODO: This naive check will definitely fail
-                    ;; when there's a க்ஷ before and we are inserting ஷ.
+                    ;; when there's a க்ஷ before and we are inserting
+                    ;; ஷ.  However, the current behaviour is consitent
+                    ;; with the tamil99 web keyboard linked in
+                    ;; Wikipedia.
                     (equal (string (char-before (point)))
                            (tamil99--lookup-translation key)))
             (setq quail-current-str (concat "்" (if (characterp quail-current-str)
                                                    (string quail-current-str)
                                                  quail-current-str))
                   tamil99--delink-flag t))))
-       (t (setq tamil99--delink-flag nil)))
-      flag)))
+       (t (setq tamil99--delink-flag nil)))))
+   ;; We can't call `quail-update-translation' even by forcing
+   ;; `quail-update-translation-function' function to return nil as it
+   ;; does extra work.
+   ((null flag)
+    (unless quail-current-str
+      (setq quail-current-str
+	    (if (quail-kbd-translate)
+		(quail-keyseq-translate quail-current-key)
+	      quail-current-key))
+      (if (and input-method-exit-on-first-char
+	       (quail-simple))
+	  (setq flag t))))
+   ((numberp flag)
+    (let ((len (length quail-current-key)))
+      (if (= flag 0)
+          (setq quail-current-str
+	        (if (quail-kbd-translate)
+		    (quail-keyseq-translate quail-current-key)
+	          quail-current-key)))
+      (or input-method-exit-on-first-char
+          (while (> len flag)
+	    (setq len (1- len))
+	    (quail-add-unread-command-events
+	     (aref quail-current-key len)))))))
+  flag)
 
 (quail-define-package "tamil99" "Tamil" "t99" t
   "Tamil99 keyboard layout."
