@@ -21,7 +21,9 @@
 ;;; Commentary:
 
 ;; This is an Emacs port of the Tamil99 keyboard layout.
-;; https://wk.w3tamil.com/
+;; For a description of the layout, visit http://www.tamilvu.org/ta/tkbd-index-341488
+;; (direct link http://www.tamilvu.org/tkbd/Tamil_Unicode_G.O.zip).
+
 ;;; Code:
 (require 'quail)
 
@@ -65,9 +67,6 @@
 
 ;; Separate to speed `assoc-default' calls in the translation func.
 (defvar tamil99-extra-translations
-  ;; TODO: The PDF file I'm referring to has the copyright sign under
-  ;; ^c, but I made it ^C since that's what the online tamil99 kb
-  ;; layout does, and it is frankly more convenient.
   '(("^2" . "½") ("^3" . "¾") ("^4" . "¼") ("^7" . "‘") ("^8" . "’")
     ("^9" . "“") ("^0" . "”") ("^." . "•") ("^C" . "©") ("^S" . " ") ;; NBSP.
     ("^^" . "^") ("^#" . "₹")
