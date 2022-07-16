@@ -1,0 +1,14 @@
+To install, clone the repository and add the following to your init
+file:
+
+	(load-file "/path/to/tamil99.el")
+
+To activate the input method, say C-u C-\ tamil99 RET.
+
+If you have any comments or improvements to be made, please write to
+the Author's mail mentioned in the file.
+
+[ NOTE: This repository is only a placeholder until I get enough
+  feedback and will be added to an Emacs release, and as such, any
+  significant contributions will require copyright assignment to the
+  FSF.  You can get the CA form by mailing emacs-devel.  ]
