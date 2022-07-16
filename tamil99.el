@@ -92,7 +92,7 @@
 ;; is the final translation.
 (defun tamil99-update-translation (flag)
   ;; TODO: Do we need to handle f specially as well?
-  (when flag
+  (when (eq flag t)
     (let ((key quail-current-key))
       (cond
        ((and (equal key "W")
