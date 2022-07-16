@@ -32,10 +32,6 @@
 
 (defvar-local tamil99--delink-flag nil)
 (put 'tamil99--delink-flag 'permanent-local t)
-(defvar-local tamil99--wrote-pulli nil)
-(put 'tamil99--wrote-pulli 'permanent-local t)
-(defvar-local tamil99--last-key nil)
-(put 'tamil99--last-key 'permanent-local t)
 
 (defsubst tamil99-vowel-keyp (key)
   (member key '("q" "w" "e" "r" "t" "a" "s" "d" "g" "g" "G" "z" "x" "c")))
