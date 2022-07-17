@@ -29,7 +29,7 @@
 
 (defvar tamil99-translation-rules
   '(("q" . "ஆ") ("w" . "ஈ") ("e" . "ஊ") ("r" . "ஐ") ("t" . "ஏ") ("y" . "ள") ("u" . "ற") ("i" . "ன") ("o" . "ட") ("p" . "ண") ("[" . "ச") ("]" . "ஞ")
-    ("Q" . "ஸ") ("W" . "ஷ") ("E" . "ஜ") ("R" . "ஹ") ("T" . ["க்ஷ"]) ("Y" . "ஸ்ரீ") ("U" . "ஶ") ("I" . "ன") ("O" . "[") ("P" . "]")
+    ("Q" . "ஸ") ("W" . "ஷ") ("E" . "ஜ") ("R" . "ஹ") ("T" . ["க்ஷ"]) ("Y" . ["ஸ்ரீ"]) ("U" . "ஶ") ("I" . "ன") ("O" . "[") ("P" . "]")
     ("a" . "அ") ("s" . "இ") ("d" . "உ") ("f" . "்") ("g" . "எ") ("h" . "க") ("j" . "ப") ("k" . "ம") ("l" . "த") (";" . "ந") ("'" . "ய")
     ("A" . "௹") ("S" . "௺") ("D" . "௸") ("F" . "ஃ") ("G" . "எ") ("H" . "க") ("J" . "ப") ("K" . "\"") ("L" . ":") (":" . ";") ("\"" . "'")
     ("z" . "ஔ") ("x" . "ஓ") ("c" . "ஒ") ("v" . "வ") ("b" . "ங") ("n" . "ல") ("m" . "ர") ("/" . "ழ")
@@ -164,7 +164,7 @@
 
 (quail-define-package "tamil99" "Tamil" "t99" t
   "Tamil99 keyboard layout."
-  nil nil t nil nil nil t nil #'tamil99-update-translation nil t)
+  nil nil t t t nil t nil #'tamil99-update-translation nil t)
 
 (progn
   ;; Clear translation rules.  Placeholder for now whilst testing.
