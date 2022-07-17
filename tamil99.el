@@ -94,7 +94,8 @@
 ;; quail-current-key is the string to be translated, quail-current-str
 ;; is the final translation.
 (defun tamil99-update-translation (flag)
-  ;; TODO: Do we need to handle f specially as well?
+  ;; TODO: Do we need to handle f specially as well?  I.e., if the
+  ;; previous character is not a consonant, should it insert ஃ (F)?
   (cond
    ((eq flag t)
     (let ((key quail-current-key))
@@ -161,7 +162,7 @@
 
 (quail-define-package "tamil99" "Tamil" "t99" t
   "Tamil99 keyboard layout."
-  nil nil t t t nil t nil #'tamil99-update-translation nil t)
+  nil nil t t t nil nil nil #'tamil99-update-translation nil t)
 
 (progn
   ;; Clear translation rules.  Placeholder for now whilst testing.
