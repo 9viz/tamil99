@@ -55,7 +55,7 @@
 (defun tamil99--lookup-translation (key)
   (let ((trans (assoc-default key tamil99-translation-rules)))
     (if (vectorp trans)
-        (aref 0 trans)
+        (aref trans 0)
       trans)))
 
 (defvar tamil99-vowel-signs
@@ -102,7 +102,8 @@
        ((and (equal key "W")
              (and (eq (char-before (point)) ?்)
                   (eq (char-before (1- (point))) ?க)))
-        ;; TODO: Maybe backspace & DEL needs to delete this ZWNJ?
+        ;; We need a ZWNJ if the previous character is க், otherwise ஷ (W)
+        ;; combines with it to produce க்ஷ (T).
         (setq quail-current-str (string #x200c quail-current-str) ; 200c = ZWNJ
               tamil99--delink-flag nil))
        ((and (tamil99-vowel-keyp key) (tamil99-consonantp))
@@ -124,11 +125,9 @@
           ;; previous consonant is same as the current consonant, then
           ;; add a pulli.
           (when (or (tamil99-soft-hard-pairp key)
-                    ;; TODO: This naive check will definitely fail
+                    ;; FIXME: This naive check will definitely fail
                     ;; when there's a க்ஷ before and we are inserting
-                    ;; ஷ.  However, the current behaviour is consitent
-                    ;; with the tamil99 web keyboard linked in
-                    ;; Wikipedia.
+                    ;; ஷ.
                     (equal (string (char-before (point)))
                            (tamil99--lookup-translation key)))
             (setq quail-current-str (concat "்" (if (characterp quail-current-str)
@@ -136,9 +135,7 @@
                                                  quail-current-str))
                   tamil99--delink-flag t))))
        (t (setq tamil99--delink-flag nil)))))
-   ;; We can't call `quail-update-translation' even by forcing
-   ;; `quail-update-translation-function' function to return nil as it
-   ;; does extra work.
+   ;; Copy-pasted from `quail-update-translation'.
    ((null flag)
     (unless quail-current-str
       (setq quail-current-str
