@@ -87,10 +87,11 @@
 (defvar-local tamil99--delink-flag nil)
 (put 'tamil99--delink-flag 'permanent-local t)
 
-;; The control flag may be a number, nil or t.
+;; The control flag FLAG may be a number, nil or t.
 ;; If a number, then that length of quail-current-key is to be
-;; translated.  If nil, then translation is not over.  If t, then
-;; translation is over.
+;; translated.
+;; If nil, then translation is not complete, and should resume.
+;; If t, then translation is complete.
 ;; quail-current-key is the string to be translated, quail-current-str
 ;; is the final translation.
 (defun tamil99-update-translation (flag)
@@ -171,6 +172,12 @@
   (dolist (r (append tamil99-translation-rules
                      tamil99-extra-translations))
     (quail-defrule (car r) (cdr r) "tamil99")))
+
+(defun tamil99--clear-delink-flag ()
+  (when (equal current-input-method "tamil99")
+    (setq tamil99--delink-flag nil)))
+
+(add-hook 'input-method-activate-hook #'tamil99--clear-delink-flag)
 
 (provide 'tamil99)
 ;;; tamil99.el ends here
