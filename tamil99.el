@@ -97,6 +97,8 @@
 (defun tamil99-update-translation (flag)
   ;; TODO: Do we need to handle f specially as well?  I.e., if the
   ;; previous character is not a consonant, should it insert ஃ (F)?
+  ;; The ibus and MS Windows tamil99 keyboard layouts simply insert
+  ;; pulli regardless of the character before point.
   (cond
    ((eq flag t)
     (let ((key quail-current-key))
@@ -114,7 +116,8 @@
         (if (equal key "a")
             (setq tamil99--delink-flag t
                   quail-current-str "")
-          (if (null tamil99--delink-flag)
+          (if (or (null tamil99--delink-flag)
+                  (eq tamil99--delink-flag 'consonant))
               ;; If no delink flag is set, then insert the vowel sign.
               (setq quail-current-str (tamil99-vowel-sign key))
             ;; Reset the flag.
@@ -135,7 +138,7 @@
             (setq quail-current-str (concat "்" (if (characterp quail-current-str)
                                                    (string quail-current-str)
                                                  quail-current-str))
-                  tamil99--delink-flag t))))
+                  tamil99--delink-flag 'consonant))))
        (t (setq tamil99--delink-flag nil)))))
    ;; Copy-pasted from `quail-update-translation'.
    ((null flag)
@@ -177,7 +180,7 @@
   (when (equal current-input-method "tamil99")
     (setq tamil99--delink-flag nil)))
 
-(add-hook 'input-method-activate-hook #'tamil99--clear-delink-flag)
+(add-hook 'input-method-deactivate-hook #'tamil99--clear-delink-flag)
 
 (provide 'tamil99)
 ;;; tamil99.el ends here
