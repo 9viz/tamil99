@@ -84,7 +84,11 @@
   (eq (assoc-default key tamil99-hard-soft-pairs)
       (char-before (point))))
 
-(defvar-local tamil99--delink-flag nil)
+(defvar-local tamil99--delink-flag nil
+  "Non-nil means prevent fancy translations.
+This flag is set to t when a user presses `a' to prevent
+conversion of mei to uyirmei, or set to `consonant' when a
+consonant pair or hard-soft consonant pair was handled.")
 (put 'tamil99--delink-flag 'permanent-local t)
 
 ;; The control flag FLAG may be a number, nil or t.
