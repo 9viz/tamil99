@@ -81,7 +81,7 @@
   '(("க" . ?ங) ("ச" . ?ஞ) ("த" . ?ந) ("ட" . ?ண) ("ப" . ?ம) ("ற" . ?ன)))
 
 (defsubst tamil99-soft-hard-pairp (key)
-  (eq (assoc-default key tamil99-hard-soft-pairs)
+  (eq (assoc-default (tamil99--lookup-translation key) tamil99-hard-soft-pairs)
       (char-before (point))))
 
 (defvar-local tamil99--delink-flag nil
@@ -135,7 +135,7 @@ consonant pair or hard-soft consonant pair was handled.")
           ;; add a pulli.
           (when (or (tamil99-soft-hard-pairp key)
                     ;; FIXME: This naive check will definitely fail
-                    ;; when there's a க்ஷ before and we are inserting
+                    ;; when there's a க்ஷbefore and we are inserting
                     ;; ஷ.
                     (equal (string (char-before (point)))
                            (tamil99--lookup-translation key)))
