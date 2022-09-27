@@ -105,7 +105,7 @@ consonant pair or hard-soft consonant pair was handled.")
   ;; pulli regardless of the character before point.
   (cond
    ((eq flag t)
-    (let ((key quail-current-key))
+    (let ((key (quail-keyseq-translate quail-current-key)))
       (cond
        ((and (equal key "W")
              (and (eq (char-before (point)) ?்)
